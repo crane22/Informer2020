@@ -323,7 +323,16 @@ class Dataset_Pred(Dataset):
             cols=self.cols.copy()
             cols.remove(self.target)
         else:
-            cols = list(df_raw.columns); cols.remove(self.target); cols.remove('date')
+            cols = list(df_raw.columns);
+            # Before trying to remove the columns, check if they exist
+            if 'date' in df_raw.columns:
+                cols.remove('date')
+            if self.target in df_raw.columns:
+                cols.remove(self.target)
+            
+            # Now proceed with your processing
+            df_raw = df_raw[['date'] + cols + [self.target]] if 'date' in df_raw.columns else df_raw[cols + [self.target]]
+
         df_raw = df_raw[['date']+cols+[self.target]]
         
         border1 = len(df_raw)-self.seq_len
